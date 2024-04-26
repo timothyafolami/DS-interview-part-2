@@ -1,1 +1,15 @@
 flask
+pandas 
+notebook
+matplotlib
+numpy
+torch
+torchvision
+scikit-learn
+openai
+langchain
+docx2txt
+langchain_community 
+langchain 
+langchain-pinecone 
+langchain-openai
