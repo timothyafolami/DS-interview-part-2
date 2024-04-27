@@ -14,3 +14,9 @@ langchain
 langchain-pinecone 
 langchain-openai
 python-dotenv
+easyocr
+beautifulsoup4 
+selenium 
+pyarrow 
+Pillow 
+requests

@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 from module_1_tasks.product_search import product_query, output_response
+from module_2_tasks.ocr_parser import read_text
 
 app = Flask(__name__)
 
@@ -25,8 +26,9 @@ def ocr_query():
     """
     image_file = request.files.get('image_data')
     # Process the image to extract text and find matching products
-    products = []  # Empty array, to be populated with product data
-    response = ""  # Empty string, to be filled with a natural language response
+    text = read_text(image_file)
+    products = list(product_query(query))  # Empty array, to be populated with product data
+    response = output_response(products)  # Empty string, to be filled with a natural language response
     return jsonify({"products": products, "response": response})
 
 @app.route('/image-product-search', methods=['POST'])
