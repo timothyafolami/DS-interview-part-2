@@ -13,3 +13,4 @@ langchain_community
 langchain 
 langchain-pinecone 
 langchain-openai
+python-dotenv

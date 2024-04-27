@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def clean_data(data):
     """
     This function cleans a pandas DataFrame by:

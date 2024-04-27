@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, render_template
+from module_1_tasks.product_search import product_query, output_response
 
 app = Flask(__name__)
 
@@ -11,8 +12,8 @@ def product_recommendation():
     """
     query = request.form.get('query', '')
     # Process the query to find matching products
-    products = []  # Empty array, to be populated with product data
-    response = ""  # Empty string, to be filled with a natural language response
+    products = list(product_query(query))  # Empty array, to be populated with product data
+    response = output_response(products)  # Empty string, to be filled with a natural language response
     return jsonify({"products": products, "response": response})
 
 @app.route('/ocr-query', methods=['POST'])
@@ -50,4 +51,4 @@ def sample_response():
     return render_template('sample_response.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
