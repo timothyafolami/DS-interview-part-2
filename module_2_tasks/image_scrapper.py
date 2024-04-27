@@ -7,6 +7,7 @@ import time
 
 # Scrapping from Amazon
 
+results = []
 def parse_image_urls(soup, classes, location, source):
     for a in soup.findAll(attrs={"class": classes}):
         name = a.find(location)

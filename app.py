@@ -1,8 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 from module_1_tasks.product_search import product_query, output_response
 from module_2_tasks.ocr_parser import read_text
+from module_3_tasks.model_inference import predict
 
 app = Flask(__name__)
+
+
+model_path = "./module_3_task/my_model_weights.pth"
 
 @app.route('/product-recommendation', methods=['POST'])
 def product_recommendation():
@@ -39,9 +43,11 @@ def image_product_search():
     Output: JSON with 'products' (array of objects) and 'response' (string).
     """
     product_image = request.files.get('product_image')
+    # predicting the class of the image
+    predicted_class = predict(model_path, product_image)
     # Process the product image to detect and match products
-    products = []  # Empty array, to be populated with product data
-    response = ""  # Empty string, to be filled with a natural language response
+    products = list(product_query(predicted_class))  # Empty array, to be populated with product data
+    response = output_response(products)  # Empty string, to be filled with a natural language response
     return jsonify({"products": products, "response": response})
 
 @app.route('/sample_response', methods=['GET'])

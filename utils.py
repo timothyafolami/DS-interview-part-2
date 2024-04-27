@@ -1,4 +1,5 @@
 import pandas as pd
+import torch
 
 
 def clean_data(data):
@@ -46,3 +47,9 @@ def clean_data(data):
         
 
     return data
+
+
+# Saving model
+def save_model(model, path):
+  """Saves the model's state dictionary to a file."""
+  torch.save(model.state_dict(), path)

@@ -88,7 +88,7 @@ def product_query(query: str):
         retrieved_docs = pc_db.query(
             vector = query_embedding,
             # returning the top 3 values
-            top_k=3, 
+            top_k=5, 
             include_values=False,
             include_metadata=True,
         )
