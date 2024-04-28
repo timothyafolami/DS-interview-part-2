@@ -112,7 +112,7 @@ def image_product_search():
     price = get_price(products)
     stock_code = get_stock_code(products)
     country = get_country(products)
-    return jsonify({"stock code": stock_code,"products": products, "response": response, "price": price, "country": country})
+    return jsonify({"stock_code": stock_code,"products": products, "response": response, "price": price, "country": country})
 
 @app.route('/sample_response', methods=['GET'])
 def sample_response():
