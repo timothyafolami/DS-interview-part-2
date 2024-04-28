@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwritten Query</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #container {
+            max-width: 500px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50; /* Green */
+        }
+
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+
+        .product {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Handwritten Query</h1>
+        <form id="ocrForm" enctype="multipart/form-data">
+            <input type="file" id="imageInput" name="image_data">
+            <button type="submit">Submit</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById("ocrForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var form = event.target;
+            var formData = new FormData(form);
+
+            fetch("/ocr-query", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display products and response
+                var resultDiv = document.getElementById("result");
+                resultDiv.innerHTML = "<h2>Products:</h2>";
+                data.products.forEach(function(product) {
+                    resultDiv.innerHTML += "<p class='product'>" + product + "</p>";
+                });
+                resultDiv.innerHTML += "<p>Response: " + data.response + "</p>";
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

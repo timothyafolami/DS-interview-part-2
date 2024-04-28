@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Product Search</h1>
+
+        <!-- File upload button -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <input type="file" id="imageInput" accept="image/*">
+            <button onclick="uploadImage()">Upload Image</button>
+        </div>
+
+        <h1>Answer In Natural Language</h1>
+        <p id="responseParagraph"></p> <!-- Paragraph for the response -->
+        
+        <h1>Selected Products</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Stock Code</th>
+                    <th>Description</th>
+                    <th>Unit Price</th>
+                    <th>Country</th>
+                </tr>
+            </thead>
+            <tbody id="productTableBody">
+                <!-- Table rows will be added dynamically via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Function to handle image upload
+        function uploadImage() {
+            var formData = new FormData();
+            var imageInput = document.getElementById("imageInput").files[0];
+            formData.append("product_image", imageInput);
+            
+            fetch("/image-product-search", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Data received from server:', data);
+    
+                // Populate description paragraph with response
+                document.getElementById("responseParagraph").textContent = data.response;
+    
+                var tableBody = document.getElementById("productTableBody");
+                tableBody.innerHTML = ""; // Clear existing rows
+                
+                // Check if data.products is an array and not empty
+                if (Array.isArray(data.products) && data.products.length > 0) {
+                    // Populate table with data
+                    data.products.forEach(function(product, index) {
+                        var row = "<tr>" +
+                            "<td>" + (data.stock_code && data.stock_code[index] || "N/A") + "</td>" +
+                            "<td>" + product + "</td>" +
+                            "<td>" + (data.price && data.price[index] || "N/A") + "</td>" +
+                            "<td>" + (data.country && data.country[index] || "N/A") + "</td>" +
+                        "</tr>";
+                        tableBody.innerHTML += row;
+                    });
+                } else {
+                    // Display a message if no products are found
+                    tableBody.innerHTML = "<tr><td colspan='4'>No products found</td></tr>";
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

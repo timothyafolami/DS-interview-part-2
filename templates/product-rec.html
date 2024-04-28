@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Recommendation</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            margin: 20px auto;
+            width: 300px;
+        }
+
+        label {
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #response-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Recommendation</h1>
+    <form id="recommendationForm">
+        <label for="query">Enter your query:</label>
+        <input type="text" id="query" name="query">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="response-container"></div>
+
+    <script>
+        document.getElementById("recommendationForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            var form = event.target;
+            var formData = new FormData(form);
+
+            fetch("/product-recommendation", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display products and response
+                var responseContainer = document.getElementById("response-container");
+                responseContainer.innerHTML = "<h2>Products:</h2>";
+                data.products.forEach(function(product) {
+                    responseContainer.innerHTML += "<p>" + product + "</p>";
+                });
+                responseContainer.innerHTML += "<p>Response: " + data.response + "</p>";
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

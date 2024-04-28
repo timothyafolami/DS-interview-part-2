@@ -2,8 +2,9 @@ import torch
 from torchvision import transforms
 import cv2
 from PIL import Image
-from model import ResNet18
+from module_3_task.model import ResNet18
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def preprocess_image(img_path):
   """Preprocesses an image for inference."""

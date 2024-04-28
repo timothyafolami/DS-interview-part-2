@@ -10,7 +10,7 @@ os.environ['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY')
 os.environ['PINECONE_API_KEY'] = os.getenv('PINECONE_API_KEY')
 
 # Text file directory
-txt_file = '../data/unique_descriptions.txt'
+txt_file = './data/unique_descriptions.txt'
 
 # Loading the text file using the TextLoader
 loader =  TextLoader(txt_file)

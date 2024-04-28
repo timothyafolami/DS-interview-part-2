@@ -47,7 +47,7 @@ prompt_out = '''
     If the output conntains BAD QUERY; give a response to the user telling him he sent a bad query, 
     he should review and ask for something better. 
     
-    If the output has real product name in it, then give short comments on those products.
+    If the output has real product name in it, then give short comments on each of the products.
 
     Please make sure to always give the right out as specified.
 
