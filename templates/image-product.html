@@ -39,9 +39,12 @@
 
         <!-- File upload button -->
         <div style="text-align: center; margin-bottom: 20px;">
-            <input type="file" id="imageInput" accept="image/*">
+            <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
             <button onclick="uploadImage()">Upload Image</button>
         </div>
+
+        <!-- Image preview -->
+        <div id="imagePreview" style="text-align: center; margin-bottom: 20px;"></div>
 
         <h1>Answer In Natural Language</h1>
         <p id="responseParagraph"></p> <!-- Paragraph for the response -->
@@ -76,31 +79,35 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Data received from server:', data);
-    
+
                 // Populate description paragraph with response
                 document.getElementById("responseParagraph").textContent = data.response;
-    
+
                 var tableBody = document.getElementById("productTableBody");
                 tableBody.innerHTML = ""; // Clear existing rows
                 
-                // Check if data.products is an array and not empty
-                if (Array.isArray(data.products) && data.products.length > 0) {
-                    // Populate table with data
-                    data.products.forEach(function(product, index) {
-                        var row = "<tr>" +
-                            "<td>" + (data.stock_code && data.stock_code[index] || "N/A") + "</td>" +
-                            "<td>" + product + "</td>" +
-                            "<td>" + (data.price && data.price[index] || "N/A") + "</td>" +
-                            "<td>" + (data.country && data.country[index] || "N/A") + "</td>" +
-                        "</tr>";
-                        tableBody.innerHTML += row;
-                    });
-                } else {
-                    // Display a message if no products are found
-                    tableBody.innerHTML = "<tr><td colspan='4'>No products found</td></tr>";
-                }
+                // Populate table with data
+                data.products.forEach(function(product, index) {
+                    var row = "<tr>" +
+                        "<td>" + (data.stock_code && data.stock_code[index] || "N/A") + "</td>" +
+                        "<td>" + product + "</td>" +
+                        "<td>" + (data.price && data.price[index] || "N/A") + "</td>" +
+                        "<td>" + (data.country && data.country[index] || "N/A") + "</td>" +
+                    "</tr>";
+                    tableBody.innerHTML += row;
+                });
             })
             .catch(error => console.error('Error:', error));
+        }
+
+        // Function to preview uploaded image
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var imagePreview = document.getElementById("imagePreview");
+                imagePreview.innerHTML = '<img src="' + reader.result + '" style="max-width: 100%; max-height: 300px;" />';
+            };
+            reader.readAsDataURL(event.target.files[0]);
         }
     </script>
 </body>
