@@ -35,28 +35,8 @@ def product_recommendation():
     return jsonify({"products": products, "response": response})
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.route('/ocr-parser', methods=['GET', 'POST'])
 def ocr_parser():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
-
     return render_template('ocr-app.html')
 
 @app.route('/ocr-query', methods=['POST'])
@@ -66,53 +46,67 @@ def ocr_query():
     Input: Form data containing 'image_data' (file, base64-encoded image or direct file upload).
     Output: JSON with 'products' (array of objects) and 'response' (string).
     """
-    image_file = str(get_most_recent_file())
-    print(image_file)
-    # Process the image to extract text and find matching products
-    text = read_text(image_file)
-    products = list(product_query(text))  # Empty array, to be populated with product data
-    response = output_response(products)  # Empty string, to be filled with a natural language response
-    return jsonify({"products": products, "response": response})
+    if request.method == 'POST':
+        # Get the uploaded file from the form
+        image_file = request.files.get('image_data')
+        # Check if a file was uploaded
+        if image_file:
+            # Secure the filename (prevents malicious characters)
+            filename = secure_filename(image_file.filename)
+
+            # Construct the full path for saving the image
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image_file.save(image_path)
+
+            # Process the image to extract text and find matching products
+            text = read_text(image_path)  # Assuming your read_text function accepts the full path
+            products = list(product_query(text))  # Empty array, to be populated with product data
+            response = output_response(products)  # Empty string, to be filled with a natural language response
+            return jsonify({"products": products, "response": response})
 
 
 @app.route('/image-product', methods=['GET', 'POST'])
 def image_product():
-    if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
-
     return render_template('image-product.html')
 
 @app.route('/image-product-search', methods=['POST'])
 def image_product_search():
-    """
-    Endpoint to identify and suggest products from uploaded product images.
-    Input: Form data containing 'product_image' (file, base64-encoded image or direct file upload).
-    Output: JSON with 'products' (array of objects) and 'response' (string).
-    """
-    product_image = str(get_most_recent_file())
-    # predicting the class of the image
-    predicted_class = predict(model_path, product_image)
-    # Process the product image to detect and match products
-    products = list(product_query(predicted_class))  # Empty array, to be populated with product data
-    response = output_response(products)  # Empty string, to be filled with a natural language response
-    # get price and description
-    price = get_price(products)
-    stock_code = get_stock_code(products)
-    country = get_country(products)
-    return jsonify({"stock_code": stock_code,"products": products, "response": response, "price": price, "country": country})
+  """
+  Endpoint to identify and suggest products from uploaded product images.
+  Input: Form data containing 'product_image' (file, base64-encoded image or direct file upload).
+  Output: JSON with 'products' (array of objects) and 'response' (string).
+  """
+  if request.method == 'POST':
+    # Get the uploaded file from the form
+    product_image_file = request.files.get('product_image')
+
+    if product_image_file:
+      # Secure the filename (prevents malicious characters)
+      filename = secure_filename(product_image_file.filename)
+
+      # Construct the full path for saving the image
+      image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+      product_image_file.save(image_path)
+
+      # Predicting the class of the image
+      predicted_class = predict(model_path, image_path)  # Use the saved image path
+    #   printing predicted_class
+      print(predicted_class)
+      # Process the product image to detect and match products
+      products = list(product_query(predicted_class))  # Empty array, to be populated with product data
+      response = output_response(products)  # Empty string, to be filled with a natural language response
+
+      # Get additional product information (assuming these functions exist)
+      price = get_price(products)
+      stock_code = get_stock_code(products)
+      country = get_country(products)
+
+      return jsonify({"stock_code": stock_code, "products": products, "response": response, "price": price, "country": country})
+    else:
+      return jsonify({"error": "No image uploaded"})
+
+  # Handle case where request is not POST (optional)
+  return jsonify({"error": "Invalid request method"})
 
 @app.route('/sample_response', methods=['GET'])
 def sample_response():

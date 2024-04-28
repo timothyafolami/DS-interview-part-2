@@ -50,6 +50,6 @@ def predict(model_path, img_path):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model_path = "./module_3_task/my_model_weights.pth"
-    img_path = './Images/Pencil_Sharpener/51A5QuxPROL._AC_UL320_.jpg'
+    img_path = './Images/ANIMAL_STICKERS/71bBdl5RLDL._AC_UL320_.jpg'
     predicted_class = predict(model_path, img_path)
     print(f"Predicted class: {predicted_class}")
