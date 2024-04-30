@@ -60,6 +60,7 @@ def ocr_query():
 
             # Process the image to extract text and find matching products
             text = read_text(image_path)  # Assuming your read_text function accepts the full path
+            print(text)
             products = list(product_query(text))  # Empty array, to be populated with product data
             response = output_response(products)  # Empty string, to be filled with a natural language response
             return jsonify({"products": products, "response": response})
